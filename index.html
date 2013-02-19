@@ -1,0 +1,58 @@
+<!--
+ 
+ @victorvhpg
+       19/02/2013
+ 
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>efeito Pixel</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="efeitoPixel.js"></script>
+        <script type="text/javascript">
+
+            function init() {
+
+                var ep = efeitoPixel.init({
+                    img: document.getElementById("img"),
+                    efeitos: [
+                         {
+                            tipo: efeitoPixel.efeitos.inverteCor 
+                   
+                        },
+                        {
+                            tipo: efeitoPixel.efeitos.pixel,
+                            config: {
+                                larguraPixel: 11,
+                                alturaPixel: 11,
+                                opacidade: 1
+                            }
+                        },
+                        {
+                            tipo: efeitoPixel.efeitos.pixel,
+                            config: {
+                                larguraPixel: 30,
+                                alturaPixel: 30,
+                                opacidade: .6
+                            }
+                        }
+                    ]
+                });
+
+
+            }
+
+            window.addEventListener("DOMContentLoaded", function() {
+                init();
+            }, false);
+
+        </script>
+    </head>
+    <body>
+        <div>
+            <img id="img" src="http://localhost:33/github/efeitosPixel/public_html/img/01.jpg"   /> 
+        </div>
+
+    </body>
+</html>
