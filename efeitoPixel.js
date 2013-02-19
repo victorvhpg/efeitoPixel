@@ -1,6 +1,6 @@
 /* 
  @victorvhpg
-       19/02/2013
+ 19/02/2013
  */
 !function(w) {
     var efeitoPixel = function() {
@@ -42,8 +42,8 @@
         },
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
-                    metadeLarguraPixel, metadeAlturaPixel, l, indicePixel,
-                    y, py, c, x, r, g, b, indicePixelMeio, lin, col;
+                    metadeLarguraPixel, metadeAlturaPixel, l,
+                    y, py, c, x, r, g, b, indicePixelMeio;
             larguraTotal = objetoImageData.width;
             alturaTotal = objetoImageData.height;
             totalLinhas = alturaTotal / alturaPixel;
@@ -53,27 +53,26 @@
             pixels = objetoImageData.data;
             for (l = 0; l < totalLinhas; l++) {
                 y = (l * alturaPixel);
-                py = ((Math.floor(y + metadeAlturaPixel)) * larguraTotal * 4)
+                py = ((Math.floor(y + metadeAlturaPixel)) * larguraTotal * 4);
                 for (c = 0; c < totalColunas; c++) {
                     x = (c * larguraPixel);
                     indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));
                     r = pixels[indicePixelMeio];
                     g = pixels[indicePixelMeio + 1];
                     b = pixels[indicePixelMeio + 2];
-                    ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + ((opacidade == -1) ? (pixels[indicePixelMeio + 3] / 255) : opacidade) + ")";
+                    ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," +
+                            ((opacidade === -1) ? (pixels[indicePixelMeio + 3] / 255) : opacidade) + ")";
                     ctx.fillRect(x, y, larguraPixel, alturaPixel);
-
                 }
             }
         }
     };
 
-//========
     efeitoPixel.prototype = {
         constructor: efeitoPixel,
         inverteCor: function(config) {
             config = configurarPadrao({
-                objetoImageData: this.objetoImageDataGlobal,
+                objetoImageData: this.objetoImageDataGlobal
             }, config);
             //atualiza o array de pixels
             efeitoPixel.realizaEfeito.inverteCor(config.objetoImageData);
