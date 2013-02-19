@@ -1,5 +1,6 @@
 /* 
  @victorvhpg
+ https://github.com/victorvhpg/efeitoPixel/blob/master/efeitoPixel.js
  19/02/2013
  */
 !function(w) {
@@ -85,9 +86,7 @@
                 alturaPixel: 10,
                 opacidade: -1
             }, config);
-            //atualiza o array de pixels
             efeitoPixel.realizaEfeito.pixel(this.ctx, config.objetoImageData, config.larguraPixel, config.alturaPixel, config.opacidade);
-
         },
         init: function(config) {
             var that = this;
