@@ -41,10 +41,14 @@
                 }
             }
         },
-        pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade) {
+        pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
                     metadeLarguraPixel, metadeAlturaPixel, l,
-                    y, py, c, x, r, g, b, indicePixelMeio;
+                    y, py, c, x, r, g, b, indicePixelMeio, larguraSemMargin, alturaSemMargin;
+            larguraSemMargin = larguraPixel;
+            alturaSemMargin = alturaPixel;
+            larguraPixel += marginX;
+            alturaPixel += marginY;
             larguraTotal = objetoImageData.width;
             alturaTotal = objetoImageData.height;
             totalLinhas = alturaTotal / alturaPixel;
@@ -61,9 +65,9 @@
                     r = pixels[indicePixelMeio];
                     g = pixels[indicePixelMeio + 1];
                     b = pixels[indicePixelMeio + 2];
-                    ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," +
+                    ctx.fillStyle = "rgba(" + (r) + "," + (g) + "," + (b) + "," +
                             ((opacidade === -1) ? (pixels[indicePixelMeio + 3] / 255) : opacidade) + ")";
-                    ctx.fillRect(x, y, larguraPixel, alturaPixel);
+                    ctx.fillRect(x, y, larguraSemMargin, alturaSemMargin);
                 }
             }
         }
@@ -84,9 +88,11 @@
                 objetoImageData: this.objetoImageDataGlobal,
                 larguraPixel: 10,
                 alturaPixel: 10,
-                opacidade: -1
+                opacidade: -1,
+                marginX: 0,
+                marginY: 0
             }, config);
-            efeitoPixel.realizaEfeito.pixel(this.ctx, config.objetoImageData, config.larguraPixel, config.alturaPixel, config.opacidade);
+            efeitoPixel.realizaEfeito.pixel(this.ctx, config.objetoImageData, config.larguraPixel, config.alturaPixel, config.opacidade, config.marginX, config.marginY);
         },
         init: function(config) {
             var that = this;
