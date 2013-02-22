@@ -18,7 +18,7 @@
         inverteCor: "inverteCor",
         pixel: "pixel"
     };
-    var configurarPadrao = function(configPadrao, configEnviada) {
+    var _configurarPadrao = function(configPadrao, configEnviada) {
         var retorno = {};
         configEnviada = configEnviada || {};
         for (var c in configPadrao) {
@@ -76,7 +76,7 @@
     efeitoPixel.prototype = {
         constructor: efeitoPixel,
         inverteCor: function(config) {
-            config = configurarPadrao({
+            config = _configurarPadrao({
                 objetoImageData: this.objetoImageDataGlobal
             }, config);
             //atualiza o array de pixels
@@ -84,7 +84,7 @@
             this.ctx.putImageData(config.objetoImageData, 0, 0);
         },
         pixel: function(config) {
-            config = configurarPadrao({
+            config = _configurarPadrao({
                 objetoImageData: this.objetoImageDataGlobal,
                 larguraPixel: 10,
                 alturaPixel: 10,
