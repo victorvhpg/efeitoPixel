@@ -17,27 +17,14 @@
                 var ep = efeitoPixel.init({
                     img: document.getElementById("img"),
                     efeitos: [
-                         {
-                            tipo: efeitoPixel.efeitos.inverteCor 
-                         } ,
                         {
                             tipo: efeitoPixel.efeitos.pixel,
                             config: {
-                                larguraPixel: 38,
-                                alturaPixel: 38,
+                                larguraPixel: 20,
+                                alturaPixel: 20,
                                 opacidade: 1,
-                                marginX: 2,
-                                marginY: 2
-                            }
-                        },
-                        {
-                            tipo: efeitoPixel.efeitos.pixel,
-                            config: {
-                                larguraPixel: 98,
-                                alturaPixel: 98,
-                                opacidade: .4,
-                                marginX: 5,
-                                marginY: 5
+                                marginX: 0,
+                                marginY: 0
                             }
                         }
                     ]
@@ -54,7 +41,11 @@
     </head>
     <body>
         <div>
-            <img id="img" src="img/1.png"   /> 
+            <img id="img" src="img/teste/original1.png"   /> 
+            <br /> <img   src="img/teste/original1_20.png"   /> <br />
+            <img   src="img/teste/original1_10.png"   /> <br />
+           
+            <img   src="img/teste/original1_50.png"   /> <br />
         </div>
 
     </body>

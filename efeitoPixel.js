@@ -41,6 +41,23 @@
                 }
             }
         },
+        getMediaRGB: function(pixels, xInit, yInit, largura, altura) {
+            var posPixel, r = 0, g = 0, b = 0, total;
+            for (var i = yInit; i < (altura + yInit); i++) {
+                for (var j = xInit; j < (largura + xInit); j++) {
+                    posPixel = (j + (i * largura)) * 4;
+                    r += pixels[posPixel];
+                    g += pixels[posPixel + 1];
+                    b += pixels[posPixel + 2];
+                }
+            }
+            total = largura * altura;
+            return {
+                r: r / total,
+                g: g / total,
+                b: b / total
+            };
+        },
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
                     metadeLarguraPixel, metadeAlturaPixel, l,
@@ -61,7 +78,7 @@
                 py = ((Math.floor(y + metadeAlturaPixel)) * larguraTotal * 4);
                 for (c = 0; c < totalColunas; c++) {
                     x = (c * larguraPixel);
-                    indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));
+                    indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));                                    
                     r = pixels[indicePixelMeio];
                     g = pixels[indicePixelMeio + 1];
                     b = pixels[indicePixelMeio + 2];
