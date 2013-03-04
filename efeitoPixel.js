@@ -27,22 +27,8 @@
         return retorno;
     };
     efeitoPixel.realizaEfeito = {
-        inverteCor: function(objetoImageData) {
-            var y, x, posPixel;
-            var larguraTotal = objetoImageData.width;
-            var alturaTotal = objetoImageData.height;
-            var vetPixel = objetoImageData.data;
-            for (y = 0; y < alturaTotal; y++) {
-                for (x = 0; x < larguraTotal; x++) {
-                    posPixel = (y * larguraTotal + x) * 4;
-                    vetPixel[posPixel] = 255 - vetPixel[posPixel];
-                    vetPixel[posPixel + 1] = 255 - vetPixel[posPixel + 1];
-                    vetPixel[posPixel + 2] = 255 - vetPixel[posPixel + 2];
-                }
-            }
-        },
         getMediaRGB: function(pixels, xInit, yInit, largura,
-                              altura, larguraTotal, alturaTotal) {
+                altura, larguraTotal, alturaTotal) {
             var posPixel, r = 0, g = 0, b = 0, lt, at, total;
             at = Math.min(altura + yInit, alturaTotal);
             lt = Math.min((largura + xInit), larguraTotal);
@@ -60,6 +46,20 @@
                 g: Math.floor(g / total),
                 b: Math.floor(b / total)
             };
+        },
+        inverteCor: function(objetoImageData) {
+            var y, x, posPixel;
+            var larguraTotal = objetoImageData.width;
+            var alturaTotal = objetoImageData.height;
+            var vetPixel = objetoImageData.data;
+            for (y = 0; y < alturaTotal; y++) {
+                for (x = 0; x < larguraTotal; x++) {
+                    posPixel = (y * larguraTotal + x) * 4;
+                    vetPixel[posPixel] = 255 - vetPixel[posPixel];
+                    vetPixel[posPixel + 1] = 255 - vetPixel[posPixel + 1];
+                    vetPixel[posPixel + 2] = 255 - vetPixel[posPixel + 2];
+                }
+            }
         },
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
