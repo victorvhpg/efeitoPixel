@@ -41,9 +41,9 @@
                 }
             }
         },
-        getMediaRGB: function(pixels, xInit, yInit, largura, altura, larguraTotal) {
+        getMediaRGB: function(pixels, xInit, yInit, largura, altura, larguraTotal, alturaTotal) {
             var posPixel, r = 0, g = 0, b = 0, lt, at, cont = 0;
-            at = altura + yInit;
+            at = Math.min(altura + yInit, alturaTotal);
             for (var i = yInit; i < at; i++) {
                 lt = Math.min((largura + xInit), larguraTotal);
                 for (var j = xInit; j < lt; j++) {
@@ -81,7 +81,7 @@
                 for (c = 0; c < totalColunas; c++) {
                     x = (c * larguraPixel);
                     // indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));                    
-                    mediaRGB = this.getMediaRGB(pixels, x, y, larguraPixel, alturaPixel, larguraTotal);
+                    mediaRGB = this.getMediaRGB(pixels, x, y, larguraPixel, alturaPixel, larguraTotal, alturaTotal);
                     r = mediaRGB.r;//pixels[indicePixelMeio];
                     g = mediaRGB.g;// pixels[indicePixelMeio + 1];
                     b = mediaRGB.b;//pixels[indicePixelMeio + 2];
