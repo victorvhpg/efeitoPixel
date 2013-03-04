@@ -72,8 +72,8 @@
             alturaTotal = objetoImageData.height;
             totalLinhas = alturaTotal / alturaPixel;
             totalColunas = larguraTotal / larguraPixel;
-            metadeLarguraPixel = Math.max(larguraPixel / 2, 1);
-            metadeAlturaPixel = Math.max(alturaPixel / 2, 1);
+           // metadeLarguraPixel = Math.max(larguraPixel / 2, 1);
+          //  metadeAlturaPixel = Math.max(alturaPixel / 2, 1);
             pixels = objetoImageData.data;
             for (l = 0; l < totalLinhas; l++) {
                 y = (l * alturaPixel);
