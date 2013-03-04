@@ -41,11 +41,11 @@
                 }
             }
         },
-        getMediaRGB: function(pixels, xInit, yInit, largura, altura) {
+        getMediaRGB: function(pixels, xInit, yInit, largura, altura, larguraTotal) {
             var posPixel, r = 0, g = 0, b = 0, total;
             for (var i = yInit; i < (altura + yInit); i++) {
                 for (var j = xInit; j < (largura + xInit); j++) {
-                    posPixel = (j + (i * largura)) * 4;
+                    posPixel = (j + (i * larguraTotal)) * 4;
                     r += pixels[posPixel];
                     g += pixels[posPixel + 1];
                     b += pixels[posPixel + 2];
@@ -53,14 +53,14 @@
             }
             total = largura * altura;
             return {
-                r: r / total,
-                g: g / total,
-                b: b / total
+                r: Math.floor(r / total),
+                g: Math.floor(g / total),
+                b: Math.floor(b / total)
             };
         },
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
-                    metadeLarguraPixel, metadeAlturaPixel, l,
+                    metadeLarguraPixel, metadeAlturaPixel, l, mediaRGB,
                     y, py, c, x, r, g, b, indicePixelMeio, larguraSemMargin, alturaSemMargin;
             larguraSemMargin = larguraPixel;
             alturaSemMargin = alturaPixel;
@@ -78,10 +78,16 @@
                 py = ((Math.floor(y + metadeAlturaPixel)) * larguraTotal * 4);
                 for (c = 0; c < totalColunas; c++) {
                     x = (c * larguraPixel);
-                    indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));                                    
-                    r = pixels[indicePixelMeio];
-                    g = pixels[indicePixelMeio + 1];
-                    b = pixels[indicePixelMeio + 2];
+                    indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));
+                    if ((x + larguraPixel) >= larguraTotal) {
+                        //  console.log(larguraTotal +"@@@"+(x + larguraPixel))
+
+                    }
+                    mediaRGB = this.getMediaRGB(pixels, x, y, larguraPixel, alturaPixel, larguraTotal);
+
+                    r = mediaRGB.r;//pixels[indicePixelMeio];
+                    g = mediaRGB.g;// pixels[indicePixelMeio + 1];
+                    b = mediaRGB.b;//pixels[indicePixelMeio + 2];
                     ctx.fillStyle = "rgba(" + (r) + "," + (g) + "," + (b) + "," +
                             ((opacidade === -1) ? (pixels[indicePixelMeio + 3] / 255) : opacidade) + ")";
                     ctx.fillRect(x, y, larguraSemMargin, alturaSemMargin);
@@ -110,6 +116,7 @@
                 marginY: 0
             }, config);
             efeitoPixel.realizaEfeito.pixel(this.ctx, config.objetoImageData, config.larguraPixel, config.alturaPixel, config.opacidade, config.marginX, config.marginY);
+
         },
         init: function(config) {
             var that = this;
