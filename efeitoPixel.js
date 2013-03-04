@@ -42,20 +42,22 @@
             }
         },
         getMediaRGB: function(pixels, xInit, yInit, largura, altura, larguraTotal) {
-            var posPixel, r = 0, g = 0, b = 0, total;
-            for (var i = yInit; i < (altura + yInit); i++) {
-                for (var j = xInit; j < (largura + xInit); j++) {
+            var posPixel, r = 0, g = 0, b = 0, lt, at, cont = 0;
+            at = altura + yInit;
+            for (var i = yInit; i < at; i++) {
+                lt = Math.min((largura + xInit), larguraTotal);
+                for (var j = xInit; j < lt; j++) {
                     posPixel = (j + (i * larguraTotal)) * 4;
                     r += pixels[posPixel];
                     g += pixels[posPixel + 1];
                     b += pixels[posPixel + 2];
+                    cont++;
                 }
             }
-            total = largura * altura;
             return {
-                r: Math.floor(r / total),
-                g: Math.floor(g / total),
-                b: Math.floor(b / total)
+                r: Math.floor(r / cont),
+                g: Math.floor(g / cont),
+                b: Math.floor(b / cont)
             };
         },
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
@@ -75,16 +77,11 @@
             pixels = objetoImageData.data;
             for (l = 0; l < totalLinhas; l++) {
                 y = (l * alturaPixel);
-                py = ((Math.floor(y + metadeAlturaPixel)) * larguraTotal * 4);
+                //py = ((Math.floor(y + metadeAlturaPixel)) * larguraTotal * 4);
                 for (c = 0; c < totalColunas; c++) {
                     x = (c * larguraPixel);
-                    indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));
-                    if ((x + larguraPixel) >= larguraTotal) {
-                        //  console.log(larguraTotal +"@@@"+(x + larguraPixel))
-
-                    }
+                    // indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));                    
                     mediaRGB = this.getMediaRGB(pixels, x, y, larguraPixel, alturaPixel, larguraTotal);
-
                     r = mediaRGB.r;//pixels[indicePixelMeio];
                     g = mediaRGB.g;// pixels[indicePixelMeio + 1];
                     b = mediaRGB.b;//pixels[indicePixelMeio + 2];
