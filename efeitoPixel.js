@@ -4,6 +4,14 @@
  19/02/2013
  */
 !function(w) {
+    var _configurarPadrao = function(configPadrao, configEnviada) {
+        var retorno = {};
+        configEnviada = configEnviada || {};
+        for (var c in configPadrao) {
+            retorno[c] = configEnviada[c] || configPadrao[c];
+        }
+        return retorno;
+    };
     var efeitoPixel = function() {
         this.img = new Image();
         this.canvas = document.createElement("canvas");
@@ -18,15 +26,7 @@
         inverteCor: "inverteCor",
         pixel: "pixel"
     };
-    var _configurarPadrao = function(configPadrao, configEnviada) {
-        var retorno = {};
-        configEnviada = configEnviada || {};
-        for (var c in configPadrao) {
-            retorno[c] = configEnviada[c] || configPadrao[c];
-        }
-        return retorno;
-    };
-    efeitoPixel.realizaEfeito = {
+    efeitoPixel.utils = {
         getMediaRGB: function(pixels, xInit, yInit, largura,
                 altura, larguraTotal, alturaTotal) {
             var posPixel, r = 0, g = 0, b = 0, lt, at, total;
@@ -46,7 +46,9 @@
                 g: Math.floor(g / total),
                 b: Math.floor(b / total)
             };
-        },
+        }
+    };
+    efeitoPixel.realizaEfeito = {
         inverteCor: function(objetoImageData) {
             var y, x, posPixel;
             var larguraTotal = objetoImageData.width;
@@ -64,7 +66,7 @@
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
                     metadeLarguraPixel, metadeAlturaPixel, l, mediaRGB,
-                    y, py, c, x, r, g, b, indicePixelMeio, larguraSemMargin, alturaSemMargin;
+                    y, py, c, x, r, g, b, indicePixelMeio, larguraSemMargin, alturaSemMargin, getMediaRGB;
             larguraSemMargin = larguraPixel;
             alturaSemMargin = alturaPixel;
             larguraPixel += marginX;
@@ -73,6 +75,7 @@
             alturaTotal = objetoImageData.height;
             totalLinhas = alturaTotal / alturaPixel;
             totalColunas = larguraTotal / larguraPixel;
+            getMediaRGB = efeitoPixel.utils.getMediaRGB;
             // metadeLarguraPixel = Math.max(larguraPixel / 2, 1);
             //  metadeAlturaPixel = Math.max(alturaPixel / 2, 1);
             pixels = objetoImageData.data;
@@ -82,7 +85,7 @@
                 for (c = 0; c < totalColunas; c++) {
                     x = (c * larguraPixel);
                     // indicePixelMeio = py + (((Math.min(Math.floor(x + metadeLarguraPixel), (larguraTotal - 1))) * 4));                    
-                    mediaRGB = this.getMediaRGB(pixels, x, y, larguraPixel, alturaPixel, larguraTotal, alturaTotal);
+                    mediaRGB = getMediaRGB(pixels, x, y, larguraPixel, alturaPixel, larguraTotal, alturaTotal);
                     r = mediaRGB.r;//pixels[indicePixelMeio];
                     g = mediaRGB.g;// pixels[indicePixelMeio + 1];
                     b = mediaRGB.b;//pixels[indicePixelMeio + 2];
