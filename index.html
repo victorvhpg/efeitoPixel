@@ -1,48 +1,105 @@
 <!--
- 
- @victorvhpg
-       19/02/2013
- 
+        https://github.com/victorvhpg/efeitoPixel
+        @victorvhpg
+        19/02/2013
+        04/03/2013
 -->
 <!DOCTYPE html>
 <html>
     <head>
-        <title>efeito Pixel</title>
+        <title>teste efeito Pixel</title>
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript" src="efeitoPixel.js"></script>
-        <script type="text/javascript">
-
-            function init() {
-
-                var ep = efeitoPixel.init({
-                    img: document.getElementById("img"),
-                    efeitos: [
-                        {
-                            tipo: efeitoPixel.efeitos.pixel,
-                            config: {
-                                larguraPixel:15,
-                                alturaPixel:15,
-                                opacidade: 1,
-                                marginX:0,
-                                marginY: 0
-                            }
-                        } 
-                    ]
-                });
-
-
+        <style>
+            img ,canvas{
+                max-width: 500px;
             }
 
+        </style>
+        <script type="text/javascript" src="https://raw.github.com/victorvhpg/efeitoPixel/master/efeitoPixel.js"></script>
+        <script type="text/javascript">
+
+            var pixelDemonstracao = {
+                processa: function(imgSrc) {
+                    var img = document.createElement("img");
+                    img.src = imgSrc;
+                    document.querySelector("#saida").innerHTML = "imagem modificada: <br />";
+                    document.querySelector("#saida").appendChild(img);
+                    var ep = efeitoPixel.init({
+                        img: img,
+                        efeitos: [
+                            {
+                                tipo: efeitoPixel.efeitos.pixel,
+                                config: {
+                                    larguraPixel: parseFloat(document.querySelector("#larguraPixel").value),
+                                    alturaPixel: parseFloat(document.querySelector("#alturaPixel").value),
+                                    opacidade: 1,
+                                    marginX: parseInt(document.querySelector("#marginX").value),
+                                    marginY: parseInt(document.querySelector("#marginY").value)
+                                }
+                            }
+                        ]
+                    });
+                },
+                init: function() {
+                    document.querySelector("#img").addEventListener("change", function() {
+                        if (this.files.length == 0) {
+                            alert("selecione uma imagem");
+                            return;
+                        }
+                        var arq = this.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function(ev) {
+                            var imgSrc = this.result;
+                            var img = document.createElement("img");
+                            img.src = imgSrc;
+                            document.querySelector("#original").innerHTML = "original:<br />";
+                            document.querySelector("#original").appendChild(img);
+                            pixelDemonstracao.processa(imgSrc);
+                        };
+                        reader.readAsDataURL(arq);
+
+                    }, false);
+
+                    [].forEach.apply(document.querySelectorAll("[data-config]"), [function(item, indice) {
+                            item.addEventListener("change", function() {
+                                document.querySelectorAll("#original img").length > 0 &&
+                                        pixelDemonstracao.processa(document.querySelector("#original img").getAttribute("src"));
+                            });
+                        }]);
+
+                }
+            };
             window.addEventListener("DOMContentLoaded", function() {
-                init();
+                pixelDemonstracao.init();
             }, false);
+
+
+
+
+
 
         </script>
     </head>
     <body>
+        @victorvhpg - <a href="https://github.com/victorvhpg/efeitoPixel">https://github.com/victorvhpg/efeitoPixel</a> <br />
         <div>
-        <img id="img" src="img/teste/w.jpg"   /> 
-             
+            larguraPixel: <input data-config  id="larguraPixel" type="number" step="1" value="10" />  
+            alturaPixel: <input data-config id="alturaPixel" type="number" step="1" value="10" /> <br />
+            marginX: <input data-config id="marginX" type="number" step="1" value="0" />  
+            marginY: <input data-config id="marginY" type="number" step="1" value="0" /> <br />
+            escolha uma IMAGEM:  <input type="file"  id="img" />
+            <div >
+                <div  style="display: inline-block" id="original">
+
+                </div>
+                <div style="display: inline-block" id="saida">
+
+                </div>
+
+
+
+            </div>
         </div>
 
     </body>
