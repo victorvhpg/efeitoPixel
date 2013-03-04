@@ -42,22 +42,22 @@
             }
         },
         getMediaRGB: function(pixels, xInit, yInit, largura, altura, larguraTotal, alturaTotal) {
-            var posPixel, r = 0, g = 0, b = 0, lt, at, cont = 0;
+            var posPixel, r = 0, g = 0, b = 0, lt, at, total;
             at = Math.min(altura + yInit, alturaTotal);
+            lt = Math.min((largura + xInit), larguraTotal);
             for (var i = yInit; i < at; i++) {
-                lt = Math.min((largura + xInit), larguraTotal);
                 for (var j = xInit; j < lt; j++) {
                     posPixel = (j + (i * larguraTotal)) * 4;
                     r += pixels[posPixel];
                     g += pixels[posPixel + 1];
                     b += pixels[posPixel + 2];
-                    cont++;
                 }
             }
+            total = (at - yInit) * (lt - xInit);
             return {
-                r: Math.floor(r / cont),
-                g: Math.floor(g / cont),
-                b: Math.floor(b / cont)
+                r: Math.floor(r / total),
+                g: Math.floor(g / total),
+                b: Math.floor(b / total)
             };
         },
         pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
@@ -72,8 +72,8 @@
             alturaTotal = objetoImageData.height;
             totalLinhas = alturaTotal / alturaPixel;
             totalColunas = larguraTotal / larguraPixel;
-           // metadeLarguraPixel = Math.max(larguraPixel / 2, 1);
-          //  metadeAlturaPixel = Math.max(alturaPixel / 2, 1);
+            // metadeLarguraPixel = Math.max(larguraPixel / 2, 1);
+            //  metadeAlturaPixel = Math.max(alturaPixel / 2, 1);
             pixels = objetoImageData.data;
             for (l = 0; l < totalLinhas; l++) {
                 y = (l * alturaPixel);
