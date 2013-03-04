@@ -41,7 +41,8 @@
                 }
             }
         },
-        getMediaRGB: function(pixels, xInit, yInit, largura, altura, larguraTotal, alturaTotal) {
+        getMediaRGB: function(pixels, xInit, yInit, largura,
+                              altura, larguraTotal, alturaTotal) {
             var posPixel, r = 0, g = 0, b = 0, lt, at, total;
             at = Math.min(altura + yInit, alturaTotal);
             lt = Math.min((largura + xInit), larguraTotal);
