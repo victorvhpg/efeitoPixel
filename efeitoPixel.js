@@ -32,6 +32,7 @@
             var posPixel, r = 0, g = 0, b = 0, lt, at, total;
             at = Math.min(altura + yInit, alturaTotal);
             lt = Math.min((largura + xInit), larguraTotal);
+            total = (at - yInit) * (lt - xInit);
             for (var i = yInit; i < at; i++) {
                 for (var j = xInit; j < lt; j++) {
                     posPixel = (j + (i * larguraTotal)) * 4;
@@ -40,7 +41,6 @@
                     b += pixels[posPixel + 2];
                 }
             }
-            total = (at - yInit) * (lt - xInit);
             return {
                 r: Math.floor(r / total),
                 g: Math.floor(g / total),
