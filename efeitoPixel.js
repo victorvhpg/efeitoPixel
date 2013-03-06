@@ -123,22 +123,27 @@
         },
         init: function(config) {
             var that = this;
-            var css = w.getComputedStyle(config.img, null);
+
             this.img.src = config.img.src;
-            var l = parseFloat(css.getPropertyValue("width"));
-            var a = parseFloat(css.getPropertyValue("height"));
+            document.body.appendChild(this.img);
+
+
             config.img.parentNode.replaceChild(this.canvas, config.img);
             this.img.addEventListener("load", function() {
+                var css = w.getComputedStyle(this, null);
+                var l = parseFloat(css.getPropertyValue("width"));
+                var a = parseFloat(css.getPropertyValue("height"));
+
                 config = _configurarPadrao({
                     x: 0,
                     y: 0,
                     larguraTotal: l,
-                    alturaTotal: a,     
+                    alturaTotal: a,
                     efeitos: []
                 }, config);
                 that.canvas.width = l;// this.width;
                 that.canvas.height = a;//this.height;
-                that.ctx.drawImage(this, 0, 0  ,l ,a);
+                that.ctx.drawImage(this, 0, 0, l, a);
                 that.objetoImageDataGlobal = that.ctx.getImageData(config.x, config.y,
                         config.larguraTotal, config.alturaTotal);
                 that.ctx.clearRect(config.x, config.y,
@@ -146,6 +151,7 @@
                 for (var i = 0; i < config.efeitos.length; i++) {
                     that[config.efeitos[i].tipo](config, config.efeitos[i].config);
                 }
+                document.body.removeChild(this);
             }, false);
 
         }
