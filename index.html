@@ -12,21 +12,25 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
             img ,canvas{
-                max-width: 500px;
+                max-width: 500px; 
             }
 
         </style>
-        <script type="text/javascript" src="https://raw.github.com/victorvhpg/efeitoPixel/master/efeitoPixel.js"></script>
+        <script type="text/javascript" src="efeitoPixel.js"></script>
         <script type="text/javascript">
 
             var pixelDemonstracao = {
-                processa: function(imgSrc) {
+                processa: function(imgSrc, x, y) {
                     var img = document.createElement("img");
                     img.src = imgSrc;
                     document.querySelector("#saida").innerHTML = "imagem modificada: <br />";
                     document.querySelector("#saida").appendChild(img);
                     var ep = efeitoPixel.init({
                         img: img,
+                        x: x,
+                        y: y,
+                        larguraTotal: parseFloat(document.querySelector("#larguraTotal").value),
+                        alturaTotal: parseFloat(document.querySelector("#alturaTotal").value),
                         efeitos: [
                             {
                                 tipo: efeitoPixel.efeitos.pixel,
@@ -39,6 +43,21 @@
                                 }
                             }
                         ]
+                    });
+                    pixelDemonstracao.click();
+                },
+                click: function() {
+
+                    document.querySelector("#saida canvas").addEventListener("click", function(e) {
+                        var xMouse = e.pageX;
+                        var yMouse = e.pageY;
+                        var left = this.offsetLeft;
+                        var top = this.offsetTop;
+                        document.querySelector("#x").value = xMouse - left;
+                        document.querySelector("#y").value = yMouse - top;
+                        pixelDemonstracao.processa(document.querySelector("#original img").getAttribute("src"),
+                                xMouse - left, yMouse - top);
+
                     });
                 },
                 init: function() {
@@ -55,7 +74,7 @@
                             img.src = imgSrc;
                             document.querySelector("#original").innerHTML = "original:<br />";
                             document.querySelector("#original").appendChild(img);
-                            pixelDemonstracao.processa(imgSrc);
+                            pixelDemonstracao.processa(imgSrc, 0, 0);
                         };
                         reader.readAsDataURL(arq);
 
@@ -64,15 +83,19 @@
                     [].forEach.apply(document.querySelectorAll("[data-config]"), [function(item, indice) {
                             item.addEventListener("change", function() {
                                 document.querySelectorAll("#original img").length > 0 &&
-                                        pixelDemonstracao.processa(document.querySelector("#original img").getAttribute("src"));
+                                        pixelDemonstracao.processa(document.querySelector("#original img").getAttribute("src"),
+                                        parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
                             });
                         }]);
 
-                }
+
+                }//init
             };
             window.addEventListener("DOMContentLoaded", function() {
                 pixelDemonstracao.init();
             }, false);
+
+
 
 
 
@@ -85,11 +108,16 @@
         @victorvhpg - <a href="https://github.com/victorvhpg/efeitoPixel">https://github.com/victorvhpg/efeitoPixel</a> <br />
         <div>
             larguraPixel: <input data-config  id="larguraPixel" type="number" step="1" value="10" />  
-            alturaPixel: <input data-config id="alturaPixel" type="number" step="1" value="10" /> <br />
+            alturaPixel: <input data-config id="alturaPixel" type="number" step="1" value="10" />  
             marginX: <input data-config id="marginX" type="number" step="1" value="0" />  
             marginY: <input data-config id="marginY" type="number" step="1" value="0" /> <br />
+            larguraTotal: <input data-config id="larguraTotal" type="number" step="1" value="100" /> 
+            alturaTotal: <input data-config id="alturaTotal" type="number" step="1" value="100" />
+            x: <input data-config id="x" type="number" step="1" value="0" /> 
+            y: <input data-config id="y" type="number" step="1" value="0" /> 
+            <br />
             escolha uma IMAGEM:  <input type="file"  id="img" />
-            <div >
+            <div  >
                 <div  style="display: inline-block" id="original">
 
                 </div>

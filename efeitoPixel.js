@@ -63,7 +63,7 @@
                 }
             }
         },
-        pixel: function(ctx, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
+        pixel: function(ctx, xInit, yInit, objetoImageData, larguraPixel, alturaPixel, opacidade, marginX, marginY) {
             var larguraTotal, alturaTotal, totalLinhas, totalColunas, pixels,
                     metadeLarguraPixel, metadeAlturaPixel, l, mediaRGB,
                     y, py, c, x, r, g, b, indicePixelMeio, larguraSemMargin, alturaSemMargin, getMediaRGB;
@@ -91,7 +91,7 @@
                     b = mediaRGB.b;//pixels[indicePixelMeio + 2];
                     ctx.fillStyle = "rgba(" + (r) + "," + (g) + "," + (b) + "," +
                             ((opacidade === -1) ? (pixels[indicePixelMeio + 3] / 255) : opacidade) + ")";
-                    ctx.fillRect(x, y, larguraSemMargin, alturaSemMargin);
+                    ctx.fillRect(xInit + x, yInit + y, larguraSemMargin, alturaSemMargin);
                 }
             }
         }
@@ -99,7 +99,7 @@
 
     efeitoPixel.prototype = {
         constructor: efeitoPixel,
-        inverteCor: function(config) {
+        inverteCor: function(configGlobal, config) {
             config = _configurarPadrao({
                 objetoImageData: this.objetoImageDataGlobal
             }, config);
@@ -107,7 +107,7 @@
             efeitoPixel.realizaEfeito.inverteCor(config.objetoImageData);
             this.ctx.putImageData(config.objetoImageData, 0, 0);
         },
-        pixel: function(config) {
+        pixel: function(configGlobal, config) {
             config = _configurarPadrao({
                 objetoImageData: this.objetoImageDataGlobal,
                 larguraPixel: 10,
@@ -116,21 +116,35 @@
                 marginX: 0,
                 marginY: 0
             }, config);
-            efeitoPixel.realizaEfeito.pixel(this.ctx, config.objetoImageData, config.larguraPixel, config.alturaPixel, config.opacidade, config.marginX, config.marginY);
+            efeitoPixel.realizaEfeito.pixel(this.ctx, configGlobal.x, configGlobal.y,
+                    config.objetoImageData, config.larguraPixel, config.alturaPixel,
+                    config.opacidade, config.marginX, config.marginY);
 
         },
         init: function(config) {
             var that = this;
+            var css = w.getComputedStyle(config.img, null);
             this.img.src = config.img.src;
+            var l = parseFloat(css.getPropertyValue("width"));
+            var a = parseFloat(css.getPropertyValue("height"));
             config.img.parentNode.replaceChild(this.canvas, config.img);
             this.img.addEventListener("load", function() {
-                that.canvas.width = this.width;
-                that.canvas.height = this.height;
-                that.ctx.drawImage(this, 0, 0);
-                that.objetoImageDataGlobal = that.ctx.getImageData(0, 0, that.canvas.width, that.canvas.height);
-                that.ctx.clearRect(0, 0, that.canvas.width, that.canvas.height);
+                config = _configurarPadrao({
+                    x: 0,
+                    y: 0,
+                    larguraTotal: l,
+                    alturaTotal: a,     
+                    efeitos: []
+                }, config);
+                that.canvas.width = l;// this.width;
+                that.canvas.height = a;//this.height;
+                that.ctx.drawImage(this, 0, 0  ,l ,a);
+                that.objetoImageDataGlobal = that.ctx.getImageData(config.x, config.y,
+                        config.larguraTotal, config.alturaTotal);
+                that.ctx.clearRect(config.x, config.y,
+                        config.larguraTotal, config.alturaTotal);
                 for (var i = 0; i < config.efeitos.length; i++) {
-                    that[config.efeitos[i].tipo](config.efeitos[i].config);
+                    that[config.efeitos[i].tipo](config, config.efeitos[i].config);
                 }
             }, false);
 
