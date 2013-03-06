@@ -123,17 +123,13 @@
         },
         init: function(config) {
             var that = this;
-
             this.img.src = config.img.src;
             document.body.appendChild(this.img);
-
-
             config.img.parentNode.replaceChild(this.canvas, config.img);
             this.img.addEventListener("load", function() {
                 var css = w.getComputedStyle(this, null);
                 var l = parseFloat(css.getPropertyValue("width"));
                 var a = parseFloat(css.getPropertyValue("height"));
-
                 config = _configurarPadrao({
                     x: 0,
                     y: 0,
@@ -144,6 +140,8 @@
                 that.canvas.width = l;// this.width;
                 that.canvas.height = a;//this.height;
                 that.ctx.drawImage(this, 0, 0, l, a);
+                config.larguraTotal = ((config.x + config.larguraTotal) > l) ? (l - config.x) : config.larguraTotal;
+                config.alturaTotal = ((config.y + config.alturaTotal) > a) ? (a - config.y) : config.alturaTotal;
                 that.objetoImageDataGlobal = that.ctx.getImageData(config.x, config.y,
                         config.larguraTotal, config.alturaTotal);
                 that.ctx.clearRect(config.x, config.y,
