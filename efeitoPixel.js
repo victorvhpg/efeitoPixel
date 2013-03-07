@@ -13,10 +13,11 @@
         return retorno;
     };
     var efeitoPixel = function() {
-        this.img = new Image();
+        this.media = null;
         this.canvas = document.createElement("canvas");
         this.ctx = this.canvas.getContext("2d");
         this.objetoImageDataGlobal = null;
+        this.pararVideo = false;
         this.versao = "0.1";
     };
     efeitoPixel.init = function(config) {
@@ -121,15 +122,38 @@
                     config.opacidade, config.marginX, config.marginY);
 
         },
+        processa: function(config) {
+            var l = this.media.width;
+            var a = this.media.height;
+            this.ctx.drawImage(this.media, 0, 0, l, a);
+            config.larguraTotal = ((config.x + config.larguraTotal) > l) ? (l - config.x) : config.larguraTotal;
+            config.alturaTotal = ((config.y + config.alturaTotal) > a) ? (a - config.y) : config.alturaTotal;
+            this.objetoImageDataGlobal = this.ctx.getImageData(config.x, config.y,
+                    config.larguraTotal, config.alturaTotal);
+            this.ctx.clearRect(config.x, config.y,
+                    config.larguraTotal, config.alturaTotal);
+            for (var i = 0; i < config.efeitos.length; i++) {
+                this[config.efeitos[i].tipo](config, config.efeitos[i].config);
+            }
+
+        },
+        pararExecVideo: function() {
+            debugger;
+            console.log(333333)
+            this.pararVideo = true;
+        },
         init: function(config) {
             var that = this;
-            this.img.src = config.img.src;
-            document.body.appendChild(this.img);
-            config.img.parentNode.replaceChild(this.canvas, config.img);
-            this.img.addEventListener("load", function() {
-                var css = w.getComputedStyle(this, null);
+            this.media = (config.media.nodeName === "VIDEO") ? document.createElement("video") : new Image();
+            this.media.src = config.media.src;
+            document.body.appendChild(this.media);
+            config.media.parentNode.replaceChild(this.canvas, config.media);
+            var init = function(callback) {
+                var css = w.getComputedStyle(that.media, null);
                 var l = parseFloat(css.getPropertyValue("width"));
                 var a = parseFloat(css.getPropertyValue("height"));
+                that.media.width = l;
+                that.media.height = a;
                 config = _configurarPadrao({
                     x: 0,
                     y: 0,
@@ -139,19 +163,33 @@
                 }, config);
                 that.canvas.width = l;// this.width;
                 that.canvas.height = a;//this.height;
-                that.ctx.drawImage(this, 0, 0, l, a);
-                config.larguraTotal = ((config.x + config.larguraTotal) > l) ? (l - config.x) : config.larguraTotal;
-                config.alturaTotal = ((config.y + config.alturaTotal) > a) ? (a - config.y) : config.alturaTotal;
-                that.objetoImageDataGlobal = that.ctx.getImageData(config.x, config.y,
-                        config.larguraTotal, config.alturaTotal);
-                that.ctx.clearRect(config.x, config.y,
-                        config.larguraTotal, config.alturaTotal);
-                for (var i = 0; i < config.efeitos.length; i++) {
-                    that[config.efeitos[i].tipo](config, config.efeitos[i].config);
+                that.processa(config);
+                that.media.style.display = "none";
+                if (typeof callback == "function") {
+                    callback(config);
                 }
-                document.body.removeChild(this);
-            }, false);
+            };
+            (config.media.nodeName === "VIDEO") ? function() {
+                that.media.play();
+                that.media.addEventListener("loadedmetadata", function() {
+                    //problemas no load firefox nightly 
+                   // setTimeout(function() {
+                        init(function(c) {
+                            var loop = function() {
+                                w.requestAnimationFrame(function() {
+                                    if (!that.pararVideo) {
+                                        that.processa(c);
+                                        loop();
+                                    }
+                                });
+                            };
+                            loop();
+                        });
+                  //  }, 1000);
 
+                }, false);
+            }() : this.media.addEventListener("load", init, false);
+            return this;
         }
     };
     w.efeitoPixel = efeitoPixel;

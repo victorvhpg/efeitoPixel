@@ -14,19 +14,76 @@
             img ,canvas{
                 max-width: 500px; 
             }
-
+            video{
+                width: 500px;
+                height: 350px;
+            }
         </style>
         <script type="text/javascript" src="efeitoPixel.js"></script>
         <script type="text/javascript">
-
+            window.URL = window.URL || window.webkitURL;
+            window.navigator.getUserMedia = (navigator.getUserMedia ||
+                    navigator.webkitGetUserMedia ||
+                    navigator.mozGetUserMedia ||
+                    navigator.msGetUserMedia);
+            window.requestAnimationFrame = (function() {
+                return window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        window.oRequestAnimationFrame ||
+                        window.msRequestAnimationFrame ||
+                        function(callback) {
+                            window.setTimeout(function() {
+                                callback(+new Date);
+                            }, 1000 / 60);
+                        };
+            })();
+            //
             var pixelDemonstracao = {
-                processa: function(imgSrc, x, y) {
+                ep: null,
+                tipo: "video",
+                pararVideo: function() {
+                    if (!pixelDemonstracao.ep || pixelDemonstracao.tipo != "video") {
+                        return;
+                    }
+                    pixelDemonstracao.ep.pararExecVideo();
+                },
+                processaImagem: function(imgSrc, x, y) {
+                    pixelDemonstracao.tipo = "imagem";
                     var img = document.createElement("img");
                     img.src = imgSrc;
                     document.querySelector("#saida").innerHTML = "imagem modificada: <br />";
                     document.querySelector("#saida").appendChild(img);
-                    var ep = efeitoPixel.init({
-                        img: img,
+                    pixelDemonstracao.realizaEfeito(img, x, y);
+                    pixelDemonstracao.click();
+                },
+                click: function() {
+                    document.querySelector("#saida canvas").addEventListener("click", function(e) {
+                        var xMouse = e.pageX;
+                        var yMouse = e.pageY;
+                        var left = this.offsetLeft;
+                        var top = this.offsetTop;
+                        document.querySelector("#x").value = xMouse - left;
+                        document.querySelector("#y").value = yMouse - top;
+                        pixelDemonstracao.processaImagem(document.querySelector("#original img").getAttribute("src"),
+                                xMouse - left, yMouse - top);
+
+                    });
+                },
+                contWebCam: 0,
+                acessoWebCam: function(callback) {
+                    window.navigator.getUserMedia({video: true},
+                    function(localMediaStream) {
+                        callback(localMediaStream);
+                    }, function(err) {
+                        alert("Verifique se sua WebCam está ligada.\nPara funcionar Você deve PERMITIR acesso à WebCam");
+                        ++pixelDemonstracao.contWebCam < 3 && pixelDemonstracao.acessoWebCam(callback);
+                    }
+                    );
+                },
+                realizaEfeito: function(media, x, y) {
+                    pixelDemonstracao.ep = efeitoPixel.init({
+                        media: media,
                         x: x,
                         y: y,
                         larguraTotal: parseFloat(document.querySelector("#larguraTotal").value),
@@ -44,21 +101,28 @@
                             }
                         ]
                     });
-                    pixelDemonstracao.click();
+
                 },
-                click: function() {
+                processaVideo: function(srcVideo) {
+                    var video = document.createElement('video');
+                    video.src = srcVideo;
+                    var video2 = document.createElement('video');
+                    video2.src = video.src;
+                    video.play();
+                    video2.play();
+                    document.querySelector("#original").innerHTML = "webcam:<br />";
+                    document.querySelector("#original").appendChild(video);
+                    document.querySelector("#saida").innerHTML = "video webcam modificada: <br />";
+                    document.querySelector("#saida").appendChild(video2);
+                    pixelDemonstracao.realizaEfeito(video2, parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
 
-                    document.querySelector("#saida canvas").addEventListener("click", function(e) {
-                        var xMouse = e.pageX;
-                        var yMouse = e.pageY;
-                        var left = this.offsetLeft;
-                        var top = this.offsetTop;
-                        document.querySelector("#x").value = xMouse - left;
-                        document.querySelector("#y").value = yMouse - top;
-                        pixelDemonstracao.processa(document.querySelector("#original img").getAttribute("src"),
-                                xMouse - left, yMouse - top);
-
+                },
+                initVideoWebCam: function() {
+                    pixelDemonstracao.pararVideo();
+                    pixelDemonstracao.acessoWebCam(function(localMediaStream) {
+                        pixelDemonstracao.processaVideo(window.URL.createObjectURL(localMediaStream));
                     });
+
                 },
                 init: function() {
                     document.querySelector("#img").addEventListener("change", function() {
@@ -66,6 +130,7 @@
                             alert("selecione uma imagem");
                             return;
                         }
+                        pixelDemonstracao.pararVideo();
                         var arq = this.files[0];
                         var reader = new FileReader();
                         reader.onload = function(ev) {
@@ -74,24 +139,34 @@
                             img.src = imgSrc;
                             document.querySelector("#original").innerHTML = "original:<br />";
                             document.querySelector("#original").appendChild(img);
-                            pixelDemonstracao.processa(imgSrc, 0, 0);
-
-
+                            pixelDemonstracao.processaImagem(imgSrc, parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
                         };
                         reader.readAsDataURL(arq);
 
                     }, false);
+                    document.querySelector("#webcam").addEventListener("click", function() {
+                        pixelDemonstracao.tipo = "video";
+                        pixelDemonstracao.initVideoWebCam();
+                    }, false);
 
                     [].forEach.apply(document.querySelectorAll("[data-config]"), [function(item, indice) {
                             item.addEventListener("change", function() {
-                                document.querySelectorAll("#original img").length > 0 &&
-                                        pixelDemonstracao.processa(document.querySelector("#original img").getAttribute("src"),
-                                        parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
+                                if (document.querySelectorAll("#original img").length > 0 || document.querySelectorAll("#original video").length > 0) {
+
+                                    if (pixelDemonstracao.tipo == "imagem") {
+                                        pixelDemonstracao.processaImagem(document.querySelector("#original img").getAttribute("src"),
+                                                parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
+                                    } else {
+
+                                        pixelDemonstracao.pararVideo();
+                                        pixelDemonstracao.processaVideo(document.querySelector("#original video").getAttribute("src"), parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
+                                    }
+                                }
                             });
                         }]);
 
-
-                }//init
+                    this.initVideoWebCam();
+                } //init
             };
             window.addEventListener("DOMContentLoaded", function() {
                 pixelDemonstracao.init();
@@ -113,22 +188,32 @@
             alturaPixel: <input data-config id="alturaPixel" type="number" step="1" value="10" />  
             marginX: <input data-config id="marginX" type="number" step="1" value="0" />  
             marginY: <input data-config id="marginY" type="number" step="1" value="0" /> <br />
-            larguraTotal: <input data-config id="larguraTotal" type="number" step="1" value="100" /> 
-            alturaTotal: <input data-config id="alturaTotal" type="number" step="1" value="100" />
+            larguraTotal: <input data-config id="larguraTotal" type="number" step="1" value="500" /> 
+            alturaTotal: <input data-config id="alturaTotal" type="number" step="1" value="350" />
             x: <input data-config id="x" type="number" step="1" value="0" /> 
             y: <input data-config id="y" type="number" step="1" value="0" /> 
             <br />
-            escolha uma IMAGEM:  <input type="file"  id="img" />
-            <div  >
-                <div  style="display: inline-block" id="original">
+            <div>
+
+
+
+
+            </div>
+
+
+            <div>
+                escolha uma IMAGEM:  <input type="file"  id="img" /> ou <input type="button"  id="webcam" value="WEBCAM" />
+                <div  >
+                    <div  style="display: inline-block" id="original">
+
+                    </div>
+                    <div style="display: inline-block" id="saida">
+
+                    </div>
+
+
 
                 </div>
-                <div style="display: inline-block" id="saida">
-
-                </div>
-
-
-
             </div>
         </div>
 
