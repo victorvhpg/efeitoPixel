@@ -4,6 +4,7 @@
  19/02/2013
  */
 !function(w) {
+    "use strict";
     var _configurarPadrao = function(configPadrao, configEnviada) {
         var retorno = {};
         configEnviada = configEnviada || {};
@@ -125,7 +126,14 @@
         processa: function(config) {
             var l = this.media.width;
             var a = this.media.height;
-            this.ctx.drawImage(this.media, 0, 0, l, a);
+            try {
+                this.ctx.drawImage(this.media, 0, 0, l, a);
+            } catch (e) {
+                //problemas com video no firefox nightly 22.0a1
+                // NS_ERROR_NOT_AVAILABLE: Component is not available 
+                console.error(e);
+                return;
+            }
             config.larguraTotal = ((config.x + config.larguraTotal) > l) ? (l - config.x) : config.larguraTotal;
             config.alturaTotal = ((config.y + config.alturaTotal) > a) ? (a - config.y) : config.alturaTotal;
             this.objetoImageDataGlobal = this.ctx.getImageData(config.x, config.y,
@@ -135,11 +143,8 @@
             for (var i = 0; i < config.efeitos.length; i++) {
                 this[config.efeitos[i].tipo](config, config.efeitos[i].config);
             }
-
         },
         pararExecVideo: function() {
-            debugger;
-            console.log(333333)
             this.pararVideo = true;
         },
         init: function(config) {
@@ -165,30 +170,31 @@
                 that.canvas.height = a;//this.height;
                 that.processa(config);
                 that.media.style.display = "none";
-                if (typeof callback == "function") {
+                if (typeof callback === "function") {
                     callback(config);
                 }
             };
             (config.media.nodeName === "VIDEO") ? function() {
-                that.media.play();
-                that.media.addEventListener("loadedmetadata", function() {
+                //loadedmetadata/canplaythrough
+                that.media.addEventListener("playing", function() {
                     //problemas no load firefox nightly 
-                   // setTimeout(function() {
-                        init(function(c) {
-                            var loop = function() {
-                                w.requestAnimationFrame(function() {
-                                    if (!that.pararVideo) {
-                                        that.processa(c);
-                                        loop();
-                                    }
-                                });
-                            };
-                            loop();
-                        });
-                  //  }, 1000);
+                    // setTimeout(function() {
+                    init(function(c) {
+                        var loop = function() {
+                            w.requestAnimationFrame(function() {
+                                if (!that.pararVideo) {
+                                    that.processa(c);
+                                    loop();
+                                }
+                            });
+                        };
+                        loop();
+                    });
+                    //  }, 1000);
 
                 }, false);
             }() : this.media.addEventListener("load", init, false);
+            that.media.play();
             return this;
         }
     };

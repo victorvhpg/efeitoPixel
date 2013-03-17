@@ -43,7 +43,7 @@
                 ep: null,
                 tipo: "video",
                 pararVideo: function() {
-                    if (!pixelDemonstracao.ep || pixelDemonstracao.tipo != "video") {
+                    if (!pixelDemonstracao.ep || pixelDemonstracao.tipo !== "video") {
                         return;
                     }
                     pixelDemonstracao.ep.pararExecVideo();
@@ -110,11 +110,15 @@
                     video2.src = video.src;
                     video.play();
                     video2.play();
-                    document.querySelector("#original").innerHTML = "webcam:<br />";
-                    document.querySelector("#original").appendChild(video);
-                    document.querySelector("#saida").innerHTML = "video webcam modificada: <br />";
-                    document.querySelector("#saida").appendChild(video2);
-                    pixelDemonstracao.realizaEfeito(video2, parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
+                    video2.addEventListener("playing", function() {
+
+                        document.querySelector("#original").innerHTML = "webcam:<br />";
+                        document.querySelector("#original").appendChild(video);
+                        document.querySelector("#saida").innerHTML = "video webcam modificada: <br />";
+                        document.querySelector("#saida").appendChild(video2);
+                        pixelDemonstracao.realizaEfeito(video2, parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
+                    });
+
 
                 },
                 initVideoWebCam: function() {
@@ -126,7 +130,7 @@
                 },
                 init: function() {
                     document.querySelector("#img").addEventListener("change", function() {
-                        if (this.files.length == 0) {
+                        if (this.files.length === 0) {
                             alert("selecione uma imagem");
                             return;
                         }
@@ -153,7 +157,7 @@
                             item.addEventListener("change", function() {
                                 if (document.querySelectorAll("#original img").length > 0 || document.querySelectorAll("#original video").length > 0) {
 
-                                    if (pixelDemonstracao.tipo == "imagem") {
+                                    if (pixelDemonstracao.tipo === "imagem") {
                                         pixelDemonstracao.processaImagem(document.querySelector("#original img").getAttribute("src"),
                                                 parseFloat(document.querySelector("#x").value), parseFloat(document.querySelector("#y").value));
                                     } else {
