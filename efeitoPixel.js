@@ -193,8 +193,8 @@
                     //  }, 1000);
 
                 }, false);
+                that.media.play();
             }() : this.media.addEventListener("load", init, false);
-            that.media.play();
             return this;
         }
     };
